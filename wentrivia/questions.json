@@ -1,0 +1,20 @@
+{
+  "questions": [
+    {
+      "content": "¿Definitivamente es una palabra?",
+      "points": 3,
+      "answers": ["Definitivamente"]
+    },
+    {
+      "content": "¿Es verdad? Cierto/Falso",
+      "points": 1,
+      "answers": ["cierto", "verdad", "bien"]
+    },
+    {
+      "content": "¿5+5?",
+      "points": 2,
+      "answers": ["diez", "10"],
+      "perfect": true
+    }
+  ]
+}
