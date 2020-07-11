@@ -1,23 +1,29 @@
 """
-Draft module for Trivia games. Soon to be moved to a package and
-some other things.
+Main module for trivia games.
+
+Trivia games can be created with the `Trivia` class, passing it a discord.py
+context object as the first argument. This module does not count with locking
+mechanisms to make sure there's a single game per channel, it only handles the
+game's internal logic.
+
+Example:
+
+>>> game = Trivia(ctx)
+>>> game.play()
 """
 
 import asyncio
 from collections import defaultdict
-import os
 from difflib import SequenceMatcher
 from dataclasses import dataclass, field
 import json
 from operator import itemgetter
+from pathlib import Path
 from random import shuffle
-from typing import List, Tuple, DefaultDict, Dict, Union
+from typing import Tuple, DefaultDict, List, Union
 
-from discord import LoginFailure, Message, User
-from discord.ext.commands import Context, Cog
-from discord.ext import commands
-
-__version__ = "0.0.1"
+from discord import User, Message
+from discord.ext.commands import Context
 
 
 @dataclass
@@ -94,7 +100,7 @@ class Trivia:
 
         # it might be wise to run this from an `Executor`, but the time
         # it blocks is negligible for now
-        with open(filename) as file:
+        with open(Path(__file__).parent / filename) as file:
             questions_dict = json.load(file)['questions']
 
         self.questions_pool = [
@@ -129,40 +135,3 @@ class Trivia:
                 await self.ctx.send('\n'.join(f'{p.name}: {s} puntos' for p, s in scores))
             else:
                 await self.ctx.send('Nadie acertó nada')
-
-
-class TriviaCog(Cog):
-    """This cog sets the rules to start a new game, supevising what channels
-    can games be started in, and how many can be played concurrently."""
-    def __init__(self, bot: commands.bot.Bot):
-        self.bot = bot
-        self.games: Dict[int, Trivia] = {}
-        self.channels = [627959873329430570]
-
-    @commands.command()
-    async def start(self, ctx: Context) -> None:
-        """Starts a new game in the current channel."""
-        can_start = (
-            ctx.channel.id in self.channels and
-            ctx.channel.id not in self.games.keys()
-        )
-
-        if not can_start:
-            return
-
-        game = Trivia(ctx)
-        self.games[ctx.channel.id] = game
-        await game.play()
-        del self.games[ctx.channel.id]
-
-
-if __name__ == '__main__':
-    bot = commands.Bot(command_prefix='!')
-    bot.add_cog(TriviaCog(bot))
-
-    token = os.environ.get('TRIVIA_BOT_TOKEN')
-
-    if token is None:
-        raise LoginFailure("TRIVIA_BOT_TOKEN hasn't been set!")
-
-    bot.run(token)
