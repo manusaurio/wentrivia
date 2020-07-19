@@ -50,7 +50,7 @@ class Trivia:
     Each game should spawn an indiviual `Trivia` instance. This allows having
     multiple games running at the same time.
     """
-    def __init__(self, ctx: Context, lang: str = '') -> None:
+    def __init__(self, ctx: Context, lang='') -> None:
         self.ctx = ctx
         self.playing = False
         self.questions_pool: List[Question] = []
@@ -69,11 +69,10 @@ class Trivia:
     def check_answer(message: Union[str, Message], question: Question) -> bool:
         """Checks if the given `answer` matches any correct answer to
         the `question`"""
-        answer: str = (
-            message.content
-            if isinstance(message, Message)
-            else message
-        ).lower()
+        if isinstance(message, Message):
+            answer = message.content.lower()
+        else:
+            answer = message.lower()
 
         # TODO: This should be somewhere else. It's being generated each time.
         correct_answers = (correct.lower() for correct in question.answers)
