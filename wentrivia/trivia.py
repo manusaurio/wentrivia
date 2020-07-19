@@ -19,7 +19,7 @@ from dataclasses import dataclass, field
 import json
 from operator import itemgetter
 from pathlib import Path
-from random import shuffle
+import random
 from typing import Tuple, DefaultDict, List, Union
 
 from discord import User, Message
@@ -85,13 +85,11 @@ class Trivia:
             for correct in correct_answers
         )
 
-    def load_questions(self, lang: str = '') -> None:
+    def load_questions(self, lang='', k=2) -> None:
         """
         Loads questions and shuffles them, with an optional `lang` argument,
         from a file named `questions.{lang}.json`.
         """
-        # TODO: This function loads the entire file. I should add a way to load
-        # them with a limit
         filename = (
             'questions' +
             (f'.{lang}.json' if lang else '.json')
@@ -100,20 +98,27 @@ class Trivia:
         # it might be wise to run this from an `Executor`, but the time
         # it blocks is negligible for now
         with open(Path(__file__).parent / filename) as file:
-            questions_dict = json.load(file)['questions']
+            questions = json.load(file)['questions']
+
+        len_range = range(len(questions))
+        number = min(len(questions), k)
+
+        chosen_index = (
+            random.sample(len_range, k=number)
+            + random.choices(len_range, k=k-number)
+        )
 
         self.questions_pool = [
-            Question(**question)
-            for question in questions_dict
+            Question(**questions[n])
+            for n in chosen_index
         ]
-
-        shuffle(self.questions_pool)
 
     async def play(self) -> None:
         """Game logic."""
         async with self:
             await self.ctx.send('Comenzando partida!')
             self.load_questions()
+
             for question in self.questions_pool:
                 await self.ctx.send(question)
                 try:
