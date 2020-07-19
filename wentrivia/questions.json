@@ -15,6 +15,17 @@
       "points": 2,
       "answers": ["diez", "10"],
       "perfect": true
+    },
+    {
+      "content": "¿...?",
+      "points": 3,
+      "answers": ["..."],
+      "perfect": true
+    },
+    {
+      "content": "We were holding back the flood",
+      "points": 5,
+      "answers": ["flood", "water"]
     }
   ]
 }
