@@ -15,7 +15,7 @@ Example:
 import asyncio
 from collections import defaultdict
 from difflib import SequenceMatcher
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 import json
 from operator import itemgetter
 from pathlib import Path
@@ -39,8 +39,8 @@ class Question:
     """
     content: str
     points: int
-    answers: Tuple[str]
-    perfect: bool = field(default=False)
+    answers: Tuple[str, ...]
+    perfect: bool = False
 
 
 class Trivia:
