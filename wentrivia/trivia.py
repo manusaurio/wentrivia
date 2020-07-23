@@ -70,12 +70,12 @@ class Trivia:
         """Checks if the given `answer` matches any correct answer to
         the `question`"""
         if isinstance(message, Message):
-            answer = message.content.lower()
+            answer = message.content.casefold()
         else:
-            answer = message.lower()
+            answer = message.casefold()
 
         # TODO: This should be somewhere else. It's being generated each time.
-        correct_answers = (correct.lower() for correct in question.answers)
+        correct_answers = (correct.casefold() for correct in question.answers)
 
         if question.perfect:
             return answer in correct_answers
