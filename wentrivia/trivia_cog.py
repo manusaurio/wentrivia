@@ -2,7 +2,7 @@ from typing import Dict
 from discord.ext.commands import Context, Cog
 from discord.ext import commands
 
-from .trivia import Trivia
+from .trivia import RegularTrivia
 
 
 class TriviaCog(Cog):
@@ -10,7 +10,7 @@ class TriviaCog(Cog):
     can games be started in, and how many can be played concurrently."""
     def __init__(self, bot: commands.bot.Bot):
         self.bot = bot
-        self.games: Dict[int, Trivia] = {}
+        self.games: Dict[int, RegularTrivia] = {}
         self.channels = [627959873329430570]
 
     @commands.command()
@@ -24,7 +24,7 @@ class TriviaCog(Cog):
         if not can_start:
             return
 
-        game = Trivia(ctx)
+        game = RegularTrivia(ctx=ctx)
         self.games[ctx.channel.id] = game
-        await game.play()
+        await game.start()
         del self.games[ctx.channel.id]
