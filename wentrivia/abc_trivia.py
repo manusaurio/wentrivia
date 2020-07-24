@@ -1,3 +1,10 @@
+"""
+Module to build trivia configurations.
+
+Every game is expected to be built with the type `Question` or any subtype,
+and any implementation of the `ABCTrivia` class.
+"""
+
 from abc import ABC, abstractmethod
 import asyncio
 from collections import defaultdict
@@ -81,7 +88,7 @@ class ABCTrivia(ABC):
 
 
 class JSONLoaderMixin(ABCTrivia):
-    def load_questions(self, *, category='', k=2) -> None:
+    def load_questions(self, *, category='', k=10) -> None:
         """
         Loads questions and shuffles them, with an optional `lang` argument,
         from a file named `questions.{lang}.json`.
@@ -109,7 +116,7 @@ class JSONLoaderMixin(ABCTrivia):
 
 
 class ForgivingCheckerMixin(ABCTrivia):
-    def __init__(self, forgiveness_ratio=0.0, *args, **kwargs):
+    def __init__(self, *args, forgiveness_ratio=0.8, **kwargs):
         super().__init__(*args, **kwargs)
         self.factory = ForgivingQuestion
         self.__ratio = forgiveness_ratio
@@ -174,8 +181,3 @@ class RegularLogicMixin(ABCTrivia):
     async def start(self, *args, **loader_kwargs) -> None:
         """Starts the game"""
         await self._play(**loader_kwargs)
-
-
-class ForgivingTrivia(RegularLogicMixin, ForgivingCheckerMixin, JSONLoaderMixin):
-    def __init__(self, ctx: Context):
-        super().__init__(ctx=ctx)
